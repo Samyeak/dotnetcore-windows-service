@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NLog;
+using NLog.Extensions.Logging;
 
 namespace WorkerServicePoC
 {
@@ -16,6 +18,15 @@ namespace WorkerServicePoC
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddNLog(new NLogProviderOptions
+                    {
+                        CaptureMessageProperties = true,
+                        CaptureMessageTemplates = true
+                    });
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
